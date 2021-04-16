@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>UserJoin Page</title>
+    <link href="/css/login-style.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+
+<body>
+<div class="container">
+    <div class="row justify-content-center" style="margin-top: 50px">
+        <h1>회원 가입</h1>
+    </div>
+
+    <hr>
+
+    <div class="form-group-wrap">
+        <div class="input-group mb-5">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="description-input-username">Username</span>
+            </div>
+            <input type="text" class="form-control" id="input-join-username" placeholder="username"
+                   aria-label="username" aria-describedby="description-input-username" required>
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                Please provide a valid username
+            </div>
+        </div>
+        <div class="input-group mb-5">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="description-input-id">ID</span>
+            </div>
+            <input type="text" class="form-control" id="input-join-id" placeholder="ID" aria-label="ID"
+                   aria-describedby="description-input-id" required>
+            <button class="btn btn-outline-dark" id="btn-id-valid" type="button">중복확인</button>
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                Please provide a valid id
+            </div>
+        </div>
+        <div class="input-group mb-5">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="description-input-pw">PW</span>
+            </div>
+            <input type="password" class="form-control" id="input-join-pw" placeholder="PW" aria-label="PW"
+                   aria-describedby="description-input-pw" required>
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                Please provide a valid password
+            </div>
+        </div>
+        <div class="row justify-content-end">
+            <button type="button" class="btn btn-outline-danger" onclick="location.href='/'">취소</button>
+            <button type="button" class="btn btn-success" id="btn-submit-join">회원 가입</button>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+<script type="text/javascript" src="/js/join-script.js"></script>
+</body>
+</html>
