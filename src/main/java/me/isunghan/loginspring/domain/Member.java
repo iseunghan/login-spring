@@ -8,9 +8,8 @@ import javax.persistence.Id;
 public class Member {
     @Id @GeneratedValue
     private Long id;
-
+    private String name;
     private String username;
-    private String userId;
     private String password;
 
     public Long getId() {
@@ -21,20 +20,20 @@ public class Member {
         this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String username) {
+        this.name = username;
+    }
+
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUsername(String userId) {
+        this.username = userId;
     }
 
     public String getPassword() {
