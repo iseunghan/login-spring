@@ -20,29 +20,33 @@
     <div class="form-group-wrap">
         <div class="input-group mb-5">
             <div class="input-group-prepend">
+                <span class="input-group-text" id="description-input-name">Name</span>
+            </div>
+            <input type="text" class="form-control" id="input-join-name" placeholder="name"
+                   aria-label="name" aria-describedby="description-input-name" required>
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                Please provide a valid name
+            </div>
+        </div>
+        <div class="input-group mb-5">
+            <div class="input-group-prepend">
                 <span class="input-group-text" id="description-input-username">Username</span>
             </div>
-            <input type="text" class="form-control" id="input-join-username" placeholder="username"
-                   aria-label="username" aria-describedby="description-input-username" required>
+            <input type="text" class="form-control" id="input-join-username" placeholder="Username" aria-label="ID"
+                   aria-describedby="description-input-username" required>
+            <button class="btn btn-outline-dark" id="btn-username-valid" type="button">중복확인</button>
+            <div class="duplicate-feedback">
+                <span class="username-duplicate" type="text" style="display: none;color: red">중복된 아이디입니다.</span>
+                <span class="username-not-duplicate" type="text" style="display: none;color: green">사용 가능한 아이디입니다.</span>
+            </div>
             <div class="valid-feedback">
                 Looks good!
             </div>
             <div class="invalid-feedback">
                 Please provide a valid username
-            </div>
-        </div>
-        <div class="input-group mb-5">
-            <div class="input-group-prepend">
-                <span class="input-group-text" id="description-input-id">ID</span>
-            </div>
-            <input type="text" class="form-control" id="input-join-id" placeholder="ID" aria-label="ID"
-                   aria-describedby="description-input-id" required>
-            <button class="btn btn-outline-dark" id="btn-id-valid" type="button">중복확인</button>
-            <div class="valid-feedback">
-                Looks good!
-            </div>
-            <div class="invalid-feedback">
-                Please provide a valid id
             </div>
         </div>
         <div class="input-group mb-5">
