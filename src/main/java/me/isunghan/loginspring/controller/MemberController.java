@@ -20,8 +20,14 @@ public class MemberController {
     private MemberService memberService;
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity findOne(@PathVariable Long id) throws NotFoundException {
-        Member member = memberService.findOne(id);
+    public ResponseEntity findOne(@PathVariable Long id) {
+        Member member = null;
+        try {
+            member = memberService.findOne(id);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(member);
     }
 
@@ -29,6 +35,20 @@ public class MemberController {
     public ResponseEntity findAll() {
         List<Member> members = memberService.findAll();
         return ResponseEntity.ok(members);
+    }
+
+    @GetMapping("/login/{username}")
+    public ResponseEntity login(@PathVariable String username) {
+        Member member = null;
+        try {
+            member = memberService.findByUsername(username);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(member);
     }
 
     @PostMapping
@@ -39,8 +59,14 @@ public class MemberController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity updateOne(@PathVariable Long id) throws NotFoundException {
-        Member member = memberService.updateOne(id);
+    public ResponseEntity updateOne(@PathVariable Long id, @RequestBody MemberDto memberDto) {
+        Member member = null;
+        try {
+            member = memberService.updateOne(id, memberDto);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(member);
     }
 
@@ -49,4 +75,10 @@ public class MemberController {
         Long deleteId = memberService.deleteOne(id);
         return ResponseEntity.ok(deleteId);
     }
+
+    @ExceptionHandler(value = IllegalStateException.class)
+    public ResponseEntity DuplicationException(IllegalStateException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
 }
