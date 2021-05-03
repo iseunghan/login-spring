@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 public class MemberOauth2Controller {
 
     @GetMapping(value = "/kakao")
-    public String kakaoOauthRedirect(@RequestParam String code) {
+    public String kakaoOauthRedirect(@RequestParam String code, Model model) {
 
         // 카카오에 POST방식으로 key=value 데이터를 요청함. RestTemplate를 사용하면 요청을 편하게 할 수 있다.
         RestTemplate rt = new RestTemplate();
@@ -29,10 +29,10 @@ public class MemberOauth2Controller {
         // HttpBody 오브젝트 생성
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
-        params.add("client_id", "{client_id}");
+        params.add("client_id", "6ef8661b32d8400a24222850b649ad85");
         params.add("redirect_uri", "http://localhost:8080/login/oauth2/code/kakao");
         params.add("code", code);
-        params.add("client_secret", "{client_secret_code}");
+        params.add("client_secret", "a2Suzdt1hIRmKY7czq4rUV3dHasaBxIK");
 
         // HttpHeader와 HttpBody를 HttpEntity에 담기 (why? rt.exchange에서 HttpEntity객체를 받게 되어있다.)
         HttpEntity<MultiValueMap<String, String>> kakaoRequest = new HttpEntity<>(params, headers);
@@ -45,6 +45,7 @@ public class MemberOauth2Controller {
                 String.class
         );
 
+        // ObjectMapper로 응답받은 토큰 정보들을 KakaoOauthParams 클래스에 담아준다
         ObjectMapper objectMapper = new ObjectMapper();
         KakaoOauthParams kakaoOauthParams = null;
         try {
@@ -53,11 +54,12 @@ public class MemberOauth2Controller {
             e.printStackTrace();
         }
 
+        // 여기서부터, Access Token을 이용해서 사용자 정보를 응답 받는 코드이다.
         HttpHeaders headers1 = new HttpHeaders();
         headers1.add("Authorization", "Bearer " + kakaoOauthParams.getAccess_token());
         headers1.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
-        HttpEntity<String> kakaoRequest1 = new HttpEntity<>(headers1);
+        HttpEntity<HttpHeaders> kakaoRequest1 = new HttpEntity<>(headers1);
 
         ResponseEntity<String> profileResponse = rt.exchange(
                 "https://kapi.kakao.com/v2/user/me",
@@ -65,8 +67,16 @@ public class MemberOauth2Controller {
                 kakaoRequest1,
                 String.class
         );
-        System.out.println(profileResponse);
 
-        return "카카오 로그인 토근 발급 완료 : " + response;
+        KakaoProfile kakaoProfile = null;
+        try {
+            kakaoProfile = objectMapper.readValue(profileResponse.getBody(), KakaoProfile.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        model.addAttribute("image", kakaoProfile.getKakao_account().getProfile().getProfile_image_url());
+        model.addAttribute("name", kakaoProfile.getKakao_account().getProfile().getNickname());
+        return "/login/login-success";
     }
 }
