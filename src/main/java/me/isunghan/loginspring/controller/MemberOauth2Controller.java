@@ -79,4 +79,62 @@ public class MemberOauth2Controller {
         model.addAttribute("name", kakaoProfile.getKakao_account().getProfile().getNickname());
         return "/login/login-success";
     }
+
+    @GetMapping("/google")
+    public String googleOAuthRedirect(@RequestParam String code, Model model) {
+
+        RestTemplate rt = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/x-www-form-urlencoded");
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("client_id", "986673395771-5hs9a0e3keolbsa9rvc0ologqrq21vlm.apps.googleusercontent.com");
+        params.add("client_secret", "BaTi_oegV5ts5yMkHUhGv-ZN");
+        params.add("code", code);
+        params.add("grant_type", "authorization_code");
+        params.add("redirect_uri", "http://localhost:8080/login/oauth2/code/google");
+
+        HttpEntity<MultiValueMap<String, String>> accessTokenRequest = new HttpEntity<>(params, headers);
+
+        ResponseEntity<String> accessTokenResponse = rt.exchange(
+                "https://oauth2.googleapis.com/token",
+                HttpMethod.POST,
+                accessTokenRequest,
+                String.class
+        );
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        GoogleOauthParams googleOauthParams = null;
+        try {
+            googleOauthParams = objectMapper.readValue(accessTokenResponse.getBody(), GoogleOauthParams.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        // 여기서부터, 프로필 정보 얻어오는 요청
+        HttpHeaders headers1 = new HttpHeaders();
+        headers1.add("Authorization", "Bearer " + googleOauthParams.getAccess_token());
+
+        HttpEntity profileRequest = new HttpEntity(headers1);
+
+        ResponseEntity<String> profileResponse = rt.exchange(
+                "https://oauth2.googleapis.com/tokeninfo?id_token=" + googleOauthParams.getId_token(),
+                HttpMethod.GET,
+                profileRequest,
+                String.class
+        );
+
+        HashMap<String, String> profileParams = null;
+        try {
+            profileParams = objectMapper.readValue(profileResponse.getBody(), HashMap.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        model.addAttribute("name", profileParams.get("name"));
+        model.addAttribute("image", profileParams.get("picture"));
+
+        return "/login/login-success";
+    }
 }
