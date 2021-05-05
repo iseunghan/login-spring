@@ -2,17 +2,21 @@ package me.isunghan.loginspring.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import me.isunghan.loginspring.security.KakaoOauthParams;
+import me.isunghan.loginspring.security.*;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-@RestController
+import java.util.HashMap;
+
+@Controller
 @RequestMapping(value = "/login/oauth2/code")
 public class MemberOauth2Controller {
 
@@ -134,6 +138,64 @@ public class MemberOauth2Controller {
 
         model.addAttribute("name", profileParams.get("name"));
         model.addAttribute("image", profileParams.get("picture"));
+
+        return "/login/login-success";
+    }
+
+    @GetMapping("/naver")
+    public String naverOAuthRedirect(@RequestParam String code, @RequestParam String state, Model model) {
+        // RestTemplate 인스턴스 생성
+        RestTemplate rt = new RestTemplate();
+
+        HttpHeaders accessTokenHeaders = new HttpHeaders();
+        accessTokenHeaders.add("Content-type", "application/x-www-form-urlencoded");
+
+        MultiValueMap<String, String> accessTokenParams = new LinkedMultiValueMap<>();
+        accessTokenParams.add("grant_type", "authorization_code");
+        accessTokenParams.add("client_id", "K8U37cGZCMT8G9HBnHa9");
+        accessTokenParams.add("client_secret", "gPausYHbPx");
+        accessTokenParams.add("code" , code);
+        accessTokenParams.add("state" , state);
+
+        HttpEntity<MultiValueMap<String, String>> accessTokenRequest = new HttpEntity<>(accessTokenParams, accessTokenHeaders);
+
+        ResponseEntity<String> accessTokenResponse = rt.exchange(
+                "https://nid.naver.com/oauth2.0/token",
+                HttpMethod.POST,
+                accessTokenRequest,
+                String.class
+        );
+
+        // json->객체 변환을 위한 ObjectMapper 생성
+        ObjectMapper objectMapper = new ObjectMapper();
+        NaverOauthParams naverOauthParams = null;
+        try {
+            naverOauthParams = objectMapper.readValue(accessTokenResponse.getBody(), NaverOauthParams.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        HttpHeaders profileRequestHeader = new HttpHeaders();
+        profileRequestHeader.add("Authorization", "Bearer " + naverOauthParams.getAccess_token());
+
+        HttpEntity<HttpHeaders> profileHttpEntity = new HttpEntity<>(profileRequestHeader);
+
+        ResponseEntity<String> profileResponse = rt.exchange(
+                "https://openapi.naver.com/v1/nid/me",
+                HttpMethod.POST,
+                profileHttpEntity,
+                String.class
+        );
+
+        NaverProfile naverProfile = null;
+        try {
+             naverProfile = objectMapper.readValue(profileResponse.getBody(), NaverProfile.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        model.addAttribute("name", naverProfile.getResponse().getName());
+        model.addAttribute("image", naverProfile.getResponse().getProfile_image());
 
         return "/login/login-success";
     }
