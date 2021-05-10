@@ -19,6 +19,8 @@ public class MemberService {
     private MemberRepository memberRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
     public Member findOne(Long id) throws NotFoundException {
@@ -35,6 +37,8 @@ public class MemberService {
         if (optional.isPresent()) {
             throw new IllegalStateException("이미 존재하는 아이디입니다.");
         }
+        String encodePW = bCryptPasswordEncoder.encode(memberDto.getPassword());
+        memberDto.setPassword(encodePW);
         Member member = modelMapper.map(memberDto, Member.class);
         System.out.println(memberDto.getName() + ", " + memberDto.getUsername() + ", " + memberDto.getPassword());
         return memberRepository.save(member);
