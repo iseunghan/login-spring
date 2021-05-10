@@ -17,6 +17,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomOAuth2UserService customOAuth2UserService;
 
+    // spring security에서 제공하는 암호화 객체를 빈으로 등록
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -33,15 +34,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                    .anyRequest()
-                    .permitAll()
+                    .anyRequest()   // 모든 요청에 대해서
+                    .permitAll()    // 허용하라
                 .and()
-                    .logout()
-                    .logoutSuccessUrl("/")
+                    .logout()   // 로그아웃에 대한 설정
+                    .logoutSuccessUrl("/")  // 성공 시 이동 url
                 .and()
-                    .oauth2Login()
-                    .defaultSuccessUrl("/login-success")
-                    .userInfoEndpoint()
-                    .userService(customOAuth2UserService);
+                    .oauth2Login()  // oauth2 로그인에 대해서
+                    .userInfoEndpoint() // 로그인에 성공한 유저 정보를
+                    .userService(customOAuth2UserService)   // 지정한 서비스에서 후처리를 하겠다.
+                .and()
+                    .defaultSuccessUrl("/login-success");   // 로그인 성공시 이동 url
     }
 }
