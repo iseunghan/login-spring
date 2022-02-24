@@ -3,6 +3,7 @@ package me.isunghan.loginspring.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.isunghan.loginspring.security.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,7 +22,11 @@ import java.util.HashMap;
 public class MemberOauth2Controller {
 
     @GetMapping(value = "/kakao")
-    public String kakaoOauthRedirect(@RequestParam String code, Model model) {
+    public String kakaoOauthRedirect(@RequestParam String code, Model model,
+                                     @Value("${spring.security.oauth2.client.registration.kakao.client-id}") String client_id,
+                                     @Value("${spring.security.oauth2.client.registration.kakao.client-secret}") String client_secret,
+                                     @Value("${spring.security.oauth2.client.registration.kakao.authorization-grant-type}") String authorization_grant_type,
+                                     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}") String redirect_uri) {
 
         // 카카오에 POST방식으로 key=value 데이터를 요청함. RestTemplate를 사용하면 요청을 편하게 할 수 있다.
         RestTemplate rt = new RestTemplate();
@@ -32,11 +37,11 @@ public class MemberOauth2Controller {
 
         // HttpBody 오브젝트 생성
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "authorization_code");
-        params.add("client_id", "6ef8661b32d8400a24222850b649ad85");
-        params.add("redirect_uri", "http://localhost:8080/login/oauth2/code/kakao");
+        params.add("grant_type", authorization_grant_type);
+        params.add("client_id", client_id);
+        params.add("client_secret", client_secret);
+        params.add("redirect_uri", redirect_uri);
         params.add("code", code);
-        params.add("client_secret", "a2Suzdt1hIRmKY7czq4rUV3dHasaBxIK");
 
         // HttpHeader와 HttpBody를 HttpEntity에 담기 (why? rt.exchange에서 HttpEntity객체를 받게 되어있다.)
         HttpEntity<MultiValueMap<String, String>> kakaoRequest = new HttpEntity<>(params, headers);
@@ -85,7 +90,11 @@ public class MemberOauth2Controller {
     }
 
     @GetMapping("/google")
-    public String googleOAuthRedirect(@RequestParam String code, Model model) {
+    public String googleOAuthRedirect(@RequestParam String code, Model model,
+                                      @Value("${spring.security.oauth2.client.registration.google.client-id") String client_id,
+                                      @Value("${spring.security.oauth2.client.registration.google.client-secret}") String client_secret,
+                                      @Value("${spring.security.oauth2.client.registration.google.authorization_code}") String authorization_grant_type,
+                                      @Value("${spring.security.oauth2.client.registration.google.redirect_uri}") String redirect_uri) {
 
         RestTemplate rt = new RestTemplate();
 
@@ -93,11 +102,11 @@ public class MemberOauth2Controller {
         headers.add("Content-Type", "application/x-www-form-urlencoded");
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("client_id", "986673395771-5hs9a0e3keolbsa9rvc0ologqrq21vlm.apps.googleusercontent.com");
-        params.add("client_secret", "BaTi_oegV5ts5yMkHUhGv-ZN");
+        params.add("client_id", client_id);
+        params.add("client_secret", client_secret);
         params.add("code", code);
-        params.add("grant_type", "authorization_code");
-        params.add("redirect_uri", "http://localhost:8080/login/oauth2/code/google");
+        params.add("grant_type", authorization_grant_type);
+        params.add("redirect_uri", redirect_uri);
 
         HttpEntity<MultiValueMap<String, String>> accessTokenRequest = new HttpEntity<>(params, headers);
 
@@ -143,7 +152,11 @@ public class MemberOauth2Controller {
     }
 
     @GetMapping("/naver")
-    public String naverOAuthRedirect(@RequestParam String code, @RequestParam String state, Model model) {
+    public String naverOAuthRedirect(@RequestParam String code, @RequestParam String state, Model model,
+                                     @Value("${spring.security.oauth2.client.registration.naver.client-id}") String client_id,
+                                     @Value("${spring.security.oauth2.client.registration.naver.client-secret}") String client_secret,
+                                     @Value("${spring.security.oauth2.client.registration.naver.authorization-grant-type}") String authorization_grant_type) {
+
         // RestTemplate 인스턴스 생성
         RestTemplate rt = new RestTemplate();
 
@@ -151,9 +164,9 @@ public class MemberOauth2Controller {
         accessTokenHeaders.add("Content-type", "application/x-www-form-urlencoded");
 
         MultiValueMap<String, String> accessTokenParams = new LinkedMultiValueMap<>();
-        accessTokenParams.add("grant_type", "authorization_code");
-        accessTokenParams.add("client_id", "K8U37cGZCMT8G9HBnHa9");
-        accessTokenParams.add("client_secret", "gPausYHbPx");
+        accessTokenParams.add("grant_type", authorization_grant_type);
+        accessTokenParams.add("client_id", client_id);
+        accessTokenParams.add("client_secret", client_secret);
         accessTokenParams.add("code" , code);
         accessTokenParams.add("state" , state);
 
